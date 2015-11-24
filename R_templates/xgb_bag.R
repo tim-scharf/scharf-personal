@@ -1,30 +1,11 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   dtrain   <-   xgb.DMatrix(Xtrain[idx,] ,missing = NA_val, label = y[idx])
   dvalid   <-   xgb.DMatrix(Xtrain[-idx,],missing = NA_val, label = y[-idx])
   
   
   
-
-
-
 
 
 ## data orgainze

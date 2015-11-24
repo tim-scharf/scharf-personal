@@ -3,22 +3,24 @@ require(xgboost)
 require(Matrix)
 
 model_dir = 'xgb_models/'
-in_file = 'X_full'
+dir.create(model_dir)
 
-X  <-  readRDS(in_file)
-y  <-  attr(X,'y')
+#in_file = 'X_full'
+
+X  <-  X
+y  <-  as.numeric(y)/100
 
 
 ## data orgainze
 train_idx <- which(!is.na(y))
 Xtrain <-  X[train_idx,]
-Xtest <-   X[-train_idx,]
+#Xtest <-   X[-train_idx,]
 y  <-  y[train_idx]
-gc()
+# gc()
 
 
 ## build XGB test mat
-dtest   <-   xgb.DMatrix(Xtest,missing=-999)
+#dtest   <-   xgb.DMatrix(Xtest,missing=-999)
 
 ntrain  <- round(.80* nrow(Xtrain)) # ~ 3.7 mill 
 
@@ -27,13 +29,13 @@ ntrain  <- round(.80* nrow(Xtrain)) # ~ 3.7 mill
 
 ## LOOP this bitch
 
-for(m in 1:200){ 
+for(m in 1:20){ 
   cat('\n','working on model',m,'\n')
   set.seed(m)
   idx      <-   sample(nrow(Xtrain),ntrain)
   #idx      <-   readRDS('use_idx')
-  dtrain   <-   xgb.DMatrix(Xtrain[idx,] ,missing = -999,label = y[idx])
-  dvalid   <-   xgb.DMatrix(Xtrain[-idx,],missing = -999,label = y[-idx])
+  dtrain   <-   xgb.DMatrix(Xtrain[idx,] ,missing = NA,label = y[idx])
+  dvalid   <-   xgb.DMatrix(Xtrain[-idx,],missing = NA,label = y[-idx])
   
 
   
@@ -41,9 +43,9 @@ for(m in 1:200){
     booster          =  'gbtree',
     #lambda           =  .001,
     #alpha            =  .001,
-    objective        =  'reg:linear',
-    eval_metric      =  'rmse',
-    max.depth        =   sample(3:10,1), 
+    objective        =   RMSPE_objective, #'reg:linear',
+    eval_metric      =   evalerror, #'rmse',
+    max.depth        =   sample(3:6,1), 
     eta              =   runif(1,.1,.3),
     gamma            =   runif(1,0,2),
     min_child_weight =   sample(0:10,1),
@@ -52,12 +54,12 @@ for(m in 1:200){
     nrounds          =   2000
   )
   
-  if (m %%4==1){
-    DATA           <- readRDS(  sample(sort(list.files(model_dir,full.names = T))[1:20],1))
-    param          <- DATA$param
-    param$eta      <-  .1  
-    param$nrounds  <-  2000
-  }
+#   if (m %%4==1){
+#     DATA           <- readRDS(  sample(sort(list.files(model_dir,full.names = T))[1:20],1))
+#     param          <- DATA$param
+#     param$eta      <-  .1  
+#     param$nrounds  <-  2000
+#   }
   
   
   model  <-    xgb.train(
