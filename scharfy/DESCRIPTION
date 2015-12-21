@@ -1,9 +1,0 @@
-Package: scharfy
-Type: Package
-Title: meta modeling package
-Version: 0.1
-Date: 2015-09-25
-Authors@R: person("Timothy", "Scharf", email = "scharf.timothy@gmail.com", role = c("aut", "cre"))
-Description: builds a n-level package 
-License: Do what the fuck you want license
-LazyData: TRUE
