@@ -16,7 +16,7 @@ path = '{}/'.format(homeDir)
 
 os.chdir(path)
 
-sys.path.append(path)
+sys.path.append(path + 'repos/scharf-personal/walmart')
 
 # %% imports 
 
@@ -28,7 +28,7 @@ from sklearn.linear_model import LogisticRegression
 
 import pandas as pd
 import numpy as np
-
+import math
 # ----------- Uptake Module ---------------
 from custom_classes import ItemSelector, Sparsifier, EvalProbs, WriteVal
 
@@ -38,9 +38,9 @@ from custom_classes import ItemSelector, Sparsifier, EvalProbs, WriteVal
 #   #### change rawDataFile location to suit your machine 
 # ==============================================================================
 
-train_file = '{}/Downloads/train.csv'.format(homeDir)
+train_file = '{}/data/walmart/train.csv'.format(homeDir)
 
-test_file = '{}/Downloads/test.csv'.format(homeDir)
+test_file = '{}/data/walmart/test.csv'.format(homeDir)
 
 # %%   
 # ==============================================================================
@@ -53,7 +53,24 @@ df = pd.concat([trainRaw, testRaw])
 
 df.DepartmentDescription.fillna('DeptNA', inplace =True)
 df.FinelineNumber.fillna('FineLineNA', inplace =True)
+df.Upc.fillna('UpcNA', inplace =True)
 
+
+def genBasket(trip,col):
+    tuples = [(i,j) for i,j in zip(trip.ScanCount,trip[col])]
+    buy =[ np.repeat(str(i[1]),i[0]) if i[0]>0 else None for i in tuples]
+    r =[ list(np.repeat(str(i[1]),abs(i[0]))) if i[0]<0 else None for i in tuples]
+
+    
+
+
+
+
+
+grouped = df.iloc[:200].groupby('VisitNumber')
+
+
+z = grouped['DepartmentDescription'].apply(lambda x: x.tolist())
 
 # %%
 # ==================================================================================================
