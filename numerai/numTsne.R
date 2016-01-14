@@ -1,8 +1,8 @@
-setwd('~/data/numerai/')
+setwd('~/repos/scharf-personal/numerai/')
 require(data.table)
 require(Rtsne)
-X0 <- fread('numerai_datasets/numerai_training_data.csv')
-X1 <- fread('numerai_datasets/numerai_tournament_data.csv')
+X0 <- fread('~/data/numerai/numerai_datasets/numerai_training_data.csv')
+X1 <- fread('~/data/numerai/numerai_datasets/numerai_tournament_data.csv')
 
 X <- rbindlist(list(X0,X1),use.names = T,fill =T)
 
@@ -10,12 +10,17 @@ M0 <- model.matrix( ~ . -1 ,data = X[,1:15,with=F] )
 
 M <- scale(M0)
 
-tsne_out <- Rtsne(M, pca = F, theta = .5, dims = 2, verbose = T)
+n =20
+A <- matrix(0, nrow = nrow(M),ncol = 2*n)
 
-col = as.integer(factor(X$target,exclude = NULL))
+for(i in 1:n){
 
-idx <- sample(nrow(M),size = 40000)
+tsne_out <- Rtsne(M, pca = F, theta = .5, dims = 2,perplexity = i+20, verbose = T)
+idx <- ((i*2)-1):(i*2)
+A[,idx] <- tsne_out$Y
+saveRDS(A,'tsneA.rds')
 
-plot(tsne_out$Y[idx,],col = col[idx],pch = 19, cex =.1)
+}
+
 
 

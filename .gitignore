@@ -1,0 +1,89 @@
+#For code written in R
+# History files
+.Rhistory
+.Rapp.history
+
+# Example code in package build process
+*-Ex.R
+
+# R data files from past sessions
+.Rdata
+
+# RStudio files
+.Rproj.user/
+  
+  # For code written in Python
+  # Byte-compiled / optimized / DLL files
+  __pycache__/
+  *.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+  build/
+  develop-eggs/
+  dist/
+  downloads/
+  eggs/
+  lib/
+  lib64/
+  parts/
+  sdist/
+  var/
+  *.egg-info/
+  .installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+  .tox/
+  .coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# Sphinx documentation
+docs/_build/
+  
+  # PyBuilder
+  target/
+  
+  # Output files
+  output/files/*
+  output/graphs/*
+  output/models/*
+  !output/files/master/
+  !output/files/comparative_output/
+  !output/graphs/master/
+  !output/models/master/
+  
+  # Data files
+  data/*.csv
+data/*.hdf5
+data/*.rds
+!data/samples/
+  !data/es_failures.csv
+
+R2HTML.css
+R2HTMLlogo.gif
+.Rproj.user

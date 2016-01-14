@@ -1,0 +1,10 @@
+Loading required package: data.table
+Loading required package: Rtsne
+Read the 74499 x 37 data matrix successfully!
+Using no_dims = 2, perplexity = 21.000000, and theta = 0.500000
+Computing input similarities...
+Normalizing input...
+Building tree...
+ - point 0 of 74499
+ - point 10000 of 74499
+ - point 20000 of 74499
