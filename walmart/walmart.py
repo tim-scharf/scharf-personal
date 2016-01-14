@@ -38,39 +38,22 @@ from custom_classes import ItemSelector, Sparsifier, EvalProbs, WriteVal
 #   #### change rawDataFile location to suit your machine 
 # ==============================================================================
 
-train_file = '{}/data/walmart/train.csv'.format(homeDir)
 
-test_file = '{}/data/walmart/test.csv'.format(homeDir)
+
+in_file = '{}/repos/scharf-personal/walmart/DATA.csv'.format(homeDir)
 
 # %%   
 # ==============================================================================
 #           LOAD,CLEAN & SPLIT DATA
 # ==============================================================================
 
-trainRaw =pd.read_csv(train_file)
-testRaw  =pd.read_csv(test_file)
-df = pd.concat([trainRaw, testRaw])
 
-df.DepartmentDescription.fillna('DeptNA', inplace =True)
-df.FinelineNumber.fillna('FineLineNA', inplace =True)
-df.Upc.fillna('UpcNA', inplace =True)
+df = pd.read_csv(in_file)
 
+trainX = df[df.y.isnull()]
+testX = df[df.y.notnull()]
+trainY = np.array(['TripType_'+ str(int(i)) for i in df.y[df.y.notnull()]])
 
-def genBasket(trip,col):
-    tuples = [(i,j) for i,j in zip(trip.ScanCount,trip[col])]
-    buy =[ np.repeat(str(i[1]),i[0]) if i[0]>0 else None for i in tuples]
-    r =[ list(np.repeat(str(i[1]),abs(i[0]))) if i[0]<0 else None for i in tuples]
-
-    
-
-
-
-
-
-grouped = df.iloc[:200].groupby('VisitNumber')
-
-
-z = grouped['DepartmentDescription'].apply(lambda x: x.tolist())
 
 # %%
 # ==================================================================================================
@@ -78,7 +61,7 @@ z = grouped['DepartmentDescription'].apply(lambda x: x.tolist())
 # =================================================================================================
 
 # lots to choose from in sklearn
-logReg = LogisticRegression(verbose=0, C=6, penalty='l2', tol=.001)
+logReg = LogisticRegression(verbose=0, C=6, penalty='l1', tol=.001)
 
 clf = logReg
 
@@ -101,36 +84,33 @@ searchCV.best_params_
 '''
 
 ## fault codes    
-sub_pipeline_weekday = Pipeline([('select_Weekday', ItemSelector(key='Weekday')),
-                                ('tfidf_faults', TfidfVectorizer(lowercase=False, norm='l1', \
-                                                                 use_idf=True, max_features=1250)),
+sub_pipeline_day = Pipeline([('select_day', ItemSelector(key='day')),
+                                ('tfidf_day', CountVectorizer())
                                 ])
 
 ## pmRules                     
-sub_pipeline_pmRules = Pipeline([('select_pmRules', ItemSelector(key='pmRules')),
-                                 ('tfidf_pmRules', TfidfVectorizer(lowercase=False, norm='l1', \
+sub_pipeline_p_basket = Pipeline([('select_p_basket', ItemSelector(key='p_basket')),
+                                 ('tfidf_p_basket', TfidfVectorizer(lowercase=False, norm='l1', \
                                                                    use_idf=True, max_features=500)),
                                  ])
 
 ##  rxRules                       
-sub_pipeline_rxRules = Pipeline([('select_rxRules', ItemSelector(key='rxRules')),
-                                 ('tfidf_rxRules', TfidfVectorizer(lowercase=False, norm='l2', \
+sub_pipeline_r_basket = Pipeline([('select_r_basket', ItemSelector(key='r_basket')),
+                                 ('tfidf_r_basket', TfidfVectorizer(lowercase=False, norm='l2', \
                                                                    use_idf=True, max_features=500)),
                                  ])
 
 ##  isAC  
-sub_pipeline_AC = Pipeline([('sparsifier_isAC', Sparsifier(key='isAC'))])
+sub_pipeline_n_ret = Pipeline([('sparsifier_n_ret', Sparsifier(key='n_ret'))])
+sub_pipeline_n_purch = Pipeline([('sparsifier_n_purch', Sparsifier(key='n_purch'))])
 
-## model 
-sub_pipeline_model = Pipeline([('select_model', ItemSelector(key='model')),
-                               ('countVect_model', CountVectorizer())])
 
 # bring all our features together    
-union = FeatureUnion([('FAULTS', sub_pipeline_faults),
-                      ('PMRULES', sub_pipeline_pmRules),
-                      ('RXRULES', sub_pipeline_rxRules),
-                      ('ISAC', sub_pipeline_AC),
-                      ('MODEL', sub_pipeline_model)
+union = FeatureUnion([('DAY', sub_pipeline_day),
+                      ('P_BASKET', sub_pipeline_p_basket),
+                      ('R_BASKET', sub_pipeline_r_basket),
+                      ('N_RET', sub_pipeline_n_ret),
+                      ('N_PURCH', sub_pipeline_n_ret)
                       ])
 
 # -----------   the actual object... nested pipelines   --------------     
@@ -145,23 +125,21 @@ pipeline = Pipeline([('union', union), ('clf', clf)])
 ## Searchable Params
 
 paramsLogReg = {
-    'clf__C': [1, 2, 4, 8, 16, 32, 64],  # regularization greater is less reg.!!
+    'clf__C': [ 2, 4, 8, 16],  # regularization greater is less reg.!!
     'clf__penalty': ['l2', 'l1']  # regularization type
 }
 
 paramsUnion = {
 
-    'union__FAULTS__tfidf_faults__norm': ['l1', 'l2'],
-    'union__PMRULES__tfidf_pmRules__norm': ['l1', 'l2'],
-    'union__RXRULES__tfidf_rxRules__norm': ['l2', 'l2'],
+    'union__P_BASKET__tfidf_p_basket__norm': [ 'l2'],
+    'union__R_BASKET__tfidf_r_basket__norm': [ 'l2'],
 
-    'union__FAULTS__tfidf_faults__use_idf': [True, False],
-    'union__PMRULES__tfidf_pmRules__use_idf': [True, False],
-    'union__RXRULES__tfidf_rxRules__use_idf': [True, False],
+    'union__P_BASKET__tfidf_p_basket__use_idf': [True],
+    'union__R_BASKET__tfidf_r_basket__use_idf': [True],
 
-    'union__FAULTS__tfidf_faults__max_features': [1000],
-    'union__PMRULES__tfidf_pmRules__max_features': [500],
-    'union__RXRULES__tfidf_rxRules__max_features': [500, 100],
+
+    'union__P_BASKET__tfidf_p_basket__max_features': [1000],
+    'union__R_BASKET__tfidf_r_basket__max_features': [1000],
 
 }
 
@@ -183,9 +161,9 @@ log_loss_scorer = make_scorer(log_loss,
 searchCV = GridSearchCV(pipeline,
                         param_grid=paramGrid,
                         verbose=1,  # verbose = 2 more output..
-                        cv=4,  # nfolds
-                        n_jobs=-2,  # uses all except 1 cores..
-                        scoring=log_loss_scorer  # how we choose params
+                        cv=2,  # nfolds
+                        n_jobs=7,  # uses all except 1 cores..
+                      #  scoring=log_loss_scorer  # how we choose params
                         )
 
 # ==============================================================================
@@ -205,14 +183,14 @@ pipeline.fit(trainX, trainY)  # just fit what i give it
 #  PREDICT 
 # ==============================================================================
 
-predicted = pipeline.predict(testX)
-probability = pipeline.predict_proba(testX)
+predicted = pipeline.predict(trainX)
+probability = pipeline.predict_proba(trainX)
 
 # consolidate Results
 
-print('Exact Match Accuracy: {}'.format(accuracy_score(testY, predicted)))
+print('Exact Match Accuracy: {}'.format(accuracy_score(trainY, predicted)))
 print('Classification Report:')
-print(classification_report(testY, predicted))
+print(classification_report(trainY, probability))
 
 if writeResults:
     WriteVal(fname='Nov9_validation.xlsx', model=pipeline, repairCol=repairCol,
