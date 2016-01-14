@@ -10,6 +10,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 #np.random.seed(1337)  # for reproducibility
 
+from sklearn.preprocessing import scale
 from keras.preprocessing import sequence
 from keras.utils import np_utils
 from keras.models import Sequential
@@ -23,15 +24,14 @@ from keras.optimizers import SGD, RMSprop, Adagrad, Adadelta, Adam
 from keras.preprocessing import sequence
 from seya.layers.recurrent import Bidirectional
 from keras.regularizers import l2, activity_l2
+from keras import callbacks
 
+class bench_compare(callbacks.Callback):
+    def _set_model(self, model):
+        self.model = model_fix
 
-class benchmark_ratio(callbacks.Callback):
-    def on_epoch_end(self, epoch, logs={}):
-        print('this is epoch ' + epoch )        
-        #self.model = model_fix
-        #p = self.model.predict(X_test_fix)
-        #loss = np.abs(p).mean()
-        #print( loss/zero_benchmark )
+    def on_epoch_end(self, batch, logs={}):
+        self.model.predict()
         
 # %%
 
@@ -56,7 +56,7 @@ X_seq = [i for i in df[X_cols_day+X_cols_hf].values]
 #counts  = df.apply(lambda x: len(x.unique()))
 #dummify = counts[counts<15]
 
-X_fix = np.array(df[fixed_cols+X_cols_day])
+X_fix = scale(np.array(df[fixed_cols+X_cols_day]))
 
 y = np.array(df[y_cols_day])
  # %%
@@ -71,7 +71,7 @@ X_test_seq = np.expand_dims(sequence.pad_sequences(X_test_seq,dtype = 'float32')
 
 zero_benchmark = np.abs(y_test).mean()
 # %%
-hidden_dim = 128
+hidden_dim = 32
 sgd = SGD(lr=0.1, decay=1e-6, momentum=0.7, nesterov=True)
 rms = RMSprop(lr=0.0025, rho=0.9, epsilon=1e-06)
 
@@ -97,7 +97,7 @@ model_fix.fit(X_train_fix,y_train,
               validation_data= [X_test_fix,y_test],
               verbose = 1,
               batch_size=128,
-              callbacks=[benchmark_ratio])
+              callbacks=[history])
 
 # %%
 w = model_fix.get_weights()
