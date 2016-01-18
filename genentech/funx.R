@@ -1,3 +1,16 @@
+importPatients <- function(data_dir){
+  # pulls in patients, drops gender (all female) and rbinds them
+  DT0 <- fread( file.path(data_dir,'patients_train.csv'))
+  DT1 <- fread(file.path(data_dir,'patients_test.csv'))
+  DT <- rbindlist(list(DT0,DT1),use.names = T,fill=T)
+  DT[,patient_gender:=NULL]
+  setkey(DT,patient_id)
+  
+  return(DT)
+  
+  
+}
+
 excludePatients <- function(DT){
   
   #excluded list
@@ -9,19 +22,8 @@ excludePatients <- function(DT){
   DT <- DT[!patient_id%in%E$V1]
   return(DT)
 }
+  
 
-importPatients <- function(){
-  
-  DT0 <- fread('~/data/genentech/patients_train.csv')
-  DT1 <- fread('~/data/genentech/patients_test.csv')
-  DT <- rbindlist(list(DT0,DT1),use.names = T,fill=T)
-  DT[,patient_gender:=NULL]
-  setkey(DT,patient_id)
-  
-  return(DT)
-  
-  
-}
 
 buildFixed <- function(DT){
   
