@@ -15,6 +15,7 @@ TSNE <- Rtsne(as.matrix(DT), dims = 2,
               max_iter = 1500)
 
 idx <- !is.na(X$fault_severity)
-plot(TSNE$Y[idx,],pch = 19 , cex = 1, col= X$fac[idx])
+plot(TSNE$Y,pch = 19 , cex = .5, col= X$fac[idx])
 
 
+scatter3d(x=TSNE$Y[idx,1],y=TSNE$Y[idx,2],z=TSNE$Y[idx,3],surface =F, point.col = as.numeric(X$fac[idx]))
