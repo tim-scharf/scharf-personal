@@ -1,26 +1,24 @@
 require(data.table)
 require(xgboost)
 require(Matrix)
-
+setwd('~/repos/scharf-personal/telestra/')
 model_dir = 'xgb_models/'
-dir.create(model_dir)
+if(!dir.exists(model_dir)){dir.create(model_dir)}
 
-#in_file = 'X_full'
-
-X  <-  X
-y  <-  as.numeric(y)/100
+train_idx <- readRDS('train_idx.rds')
+test_idx <- readRDS('test_idx.rds')
+y  <-  readRDS('y.rds')
 
 
 ## data orgainze
-train_idx <- which(!is.na(y))
-Xtrain <-  X[train_idx,]
-#Xtest <-   X[-train_idx,]
+Xtrain <-  readRDS('K.rds')
+Xtest <-   readRDS('K_test.rds')
 y  <-  y[train_idx]
 # gc()
 
 
 ## build XGB test mat
-#dtest   <-   xgb.DMatrix(Xtest,missing=-999)
+dtest   <-   xgb.DMatrix(Xtest,missing=-999)
 
 ntrain  <- round(.80* nrow(Xtrain)) # ~ 3.7 mill 
 
@@ -43,15 +41,16 @@ for(m in 1:20){
     booster          =  'gbtree',
     #lambda           =  .001,
     #alpha            =  .001,
-    objective        =   RMSPE_objective, #'reg:linear',
-    eval_metric      =   evalerror, #'rmse',
+    objective        =   'multi:softprob', #'reg:linear',
+    eval_metric      =   'mlogloss', #'rmse',
     max.depth        =   sample(3:6,1), 
     eta              =   runif(1,.1,.3),
     gamma            =   runif(1,0,2),
     min_child_weight =   sample(0:10,1),
     subsample        =   runif(1,.4,.6),
     colsample_bytree =   runif(1,.6,.9),
-    nrounds          =   2000
+    nrounds          =   2000,
+    num_class        =  3
   )
   
   #   if (m %%4==1){
@@ -69,6 +68,7 @@ for(m in 1:20){
     params            = param,
     data              = dtrain,
     nrounds           = param$nrounds,
+    maximize          =  F,
     verbose= 1)
   
   
