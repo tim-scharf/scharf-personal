@@ -7,6 +7,7 @@ X1 <- fread('data/test.csv')
 X <- rbindlist(list(X0,X1),fill = T)
 setkey(X,id)
 idx <- which(!is.na(X$fault_severity))
+test_idx <- which(is.na(X$fault_severity))
 
 X[,n_loc:=.N,by=location]
 X[,loc_num:=as.numeric(substr(X$location,10,stop = 20))]
