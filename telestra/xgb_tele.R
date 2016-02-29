@@ -18,7 +18,7 @@ y  <-  y[train_idx]
 
 
 ## build XGB test mat
-dtest   <-   xgb.DMatrix(Xtest,missing=-999)
+dtest   <-   xgb.DMatrix(Xtest,missing=NA)
 
 ntrain  <- round(.80* nrow(Xtrain)) # ~ 3.7 mill 
 
@@ -44,13 +44,15 @@ for(m in 1:20){
     objective        =   'multi:softprob', #'reg:linear',
     eval_metric      =   'mlogloss', #'rmse',
     max.depth        =   sample(3:6,1), 
-    eta              =   runif(1,.1,.3),
-    gamma            =   runif(1,0,2),
-    min_child_weight =   sample(0:10,1),
+    eta              =   runif(1,.005,.1),
+    gamma            =   runif(1,0,4),
+    min_child_weight =   runif(1,0,3),
     subsample        =   runif(1,.4,.6),
     colsample_bytree =   runif(1,.6,.9),
-    nrounds          =   2000,
-    num_class        =  3
+    nrounds          =   1000,
+    num_class        =   3,
+    nthread          =   5
+    
   )
   
   #   if (m %%4==1){
@@ -62,9 +64,9 @@ for(m in 1:20){
   
   
   model  <-    xgb.train(
-    early_stop_round  = 10,
+    early.stop.round  = 10,
     watchlist         = list( valid_err = dvalid),
-    printEveryN       = 5,
+    print.every.n     = 5,
     params            = param,
     data              = dtrain,
     nrounds           = param$nrounds,
