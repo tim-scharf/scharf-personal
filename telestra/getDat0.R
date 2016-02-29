@@ -1,4 +1,6 @@
 require(data.table)
+require(entropy)
+
 setwd('~/repos/scharf-personal/telestra/')
 X0 <- fread('~/data/telestra/train.csv')
 X1 <- fread('~/data/telestra/test.csv')
@@ -7,14 +9,15 @@ setkey(X,id)
 idx <- which(!is.na(X$fault_severity))
 
 X[,n_loc:=.N,by=location]
-fac_cols = c('y_0','y_1','y_2','y_NA')
-X[,fac:=factor(fault_severity,exclude = NULL,labels = fac_cols )]
 X[,loc_num:=as.numeric(substr(X$location,10,stop = 20))]
 
-X2 <- X[,as.list(table(fac)),by = location]
-fac_cols_prop <- paste( 'prop',fac_cols,sep = '_' )
-X2[,(fac_cols_prop):= .SD/(sum(.SD)),by = location]
-X2[,loc_num:=as.numeric(substr(X2$location,10,stop = 20))]
+fac_cols = c('y0','y1','y2','yNA')
+X[,y:=factor(fault_severity,exclude = NULL,labels = fac_cols)]
+
+X2 <- X[,as.list(table(y)),by = location]
+y_prop <- paste( 'prop',fac_cols,sep = '_' )
+X2[,(y_prop):= .SD/(sum(.SD)),by = location]
+ 
 X2[,entrpy:=apply(.SD,1,entropy),.SDcols=fac_cols,by = location]
 setkey(X2,location)
 
