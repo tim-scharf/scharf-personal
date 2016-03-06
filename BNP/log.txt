@@ -1,0 +1,20 @@
+Loading required package: data.table
+Read 87.5% of 114321 rowsRead 114321 rows and 133 (of 133) columns from 0.108 GB file in 00:00:03
+Read 96.2% of 114393 rowsRead 114393 rows and 132 (of 132) columns from 0.108 GB file in 00:00:03
+Loading required package: xgboost
+
+ working on model 1 
+[0]	valid_err-logloss:0.544327
+[20]	valid_err-logloss:0.502100
+[40]	valid_err-logloss:0.497144
+[60]	valid_err-logloss:0.495725
+[80]	valid_err-logloss:0.494996
+[100]	valid_err-logloss:0.495046
+Stopping. Best iteration: 86 
+
+ working on model 2 
+[0]	valid_err-logloss:0.886090
+[20]	valid_err-logloss:0.498784
+[40]	valid_err-logloss:0.494151
+[60]	valid_err-logloss:0.493059
+Stopping. Best iteration: 63 
