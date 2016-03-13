@@ -20,6 +20,6 @@ xgb_train <- function(train, valid, y_train, y_valid, dtest, param){
                    rounds   = model$bestInd,
                    cv_score = model$bestScore)
   
-  return(pcv,pt,data_iter)
+  return(pcv_iter,pt_iter,data_iter)
 }
 

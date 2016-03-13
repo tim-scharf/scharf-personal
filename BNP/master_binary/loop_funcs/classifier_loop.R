@@ -4,13 +4,13 @@ classifier_loop <- function(name = 'xgb_tester',
                             Xtest.rds, 
                             train_func,
                             param_func,
+                            data_checks_func,
                             iter =10,
                             pct_train = .5){
 
-
-dir.create()
-
-#data checks
+#get data checks
+  
+  
 data_checks_func()
 
 # settings

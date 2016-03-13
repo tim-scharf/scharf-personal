@@ -6,19 +6,17 @@ require(methods)
 require(utils)
 
 setwd('~/repos/scharf-personal/BNP/')
-source('xgb_loop_binary.R')
-source('gen_param_binary.R')
-source('data_checks_binary.R')
-source('treat_factors.R')
-source('replaceNA.R')
-
+lapply(list.files('master_binary/util_funcs/',full.names = T,recursive = T),source)
 
 X <- rbindlist(list(fread('~/data/BNP/train.csv'),fread('~/data/BNP/test.csv')),fill = T)
+
 train_idx <- which(!is.na(X$target))
 test_idx <- which(is.na(X$target))
 data_cols <- paste0('v',1:131)
 fac_cols  <- names(X)[sapply(X,is.character)]
 num_cols <- setdiff(data_cols,fac_cols)
+
+
 
 MFAC <- treat_factors(X,fac_cols = fac_cols,max_cat = 1024)
 
@@ -34,8 +32,12 @@ M <- cBind(M999,MFAC)
 
 Xtrain <- M[train_idx,]
 Xtest <- M[test_idx,]
-
 y <- X[train_idx,target]
+
+saveRDS(Xtrain,'data/Xtrain.rds')
+saveRDS(Xtest,'data/Xtest.rds')
+saveRDS(y,'data/y.rds')
+
 
 xgb_loop_binary(Xtrain,y,Xtest, m = 1000 ,missing = -999)
 
