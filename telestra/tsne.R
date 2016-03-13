@@ -2,7 +2,6 @@ require(Rtsne)
 require(doMC)
 source('getDat0.R')
 
-set.seed(1234)
 registerDoMC(detectCores()-1)
 DT <- L[S[E[R]]]
 DT[,noise:=runif(nrow(DT))]
