@@ -1,7 +1,7 @@
 xgb_tree_params <- function(seed){
 set.seed(seed)
 params = list( 
-  booster          =  'gbtree',
+  booster          =   'gbtree',
   objective        =   'binary:logistic',
   eval_metric      =   'logloss', 
   max.depth        =   sample(3:12, 1), 
@@ -11,10 +11,10 @@ params = list(
   subsample        =   runif(1,.4,.6),
   colsample_bytree =   runif(1,.3,.9),
   nrounds          =   1500,
-  lambda           =  runif(1,.25,1.5),  ##tree related?
-  alpha            =  0,                 ## tree related?
-  base_score       =  runif(1, .5,.8),
-  nthread          =   8,
+  lambda           =   runif(1,.25,1.5),  ##tree related?
+  alpha            =   0,                 ## tree related?
+  base_score       =   runif(1, .5,.8),
+  nthread          =   12,
   missing          =   NA)
 
 return(params) } 

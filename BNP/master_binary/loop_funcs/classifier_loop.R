@@ -3,6 +3,7 @@ classifier_loop <- function(name = 'xgb_tester',
                             y.rds, 
                             Xtest.rds, 
                             train_func,
+                            param_func,
                             iter =10,
                             pct_train = .5){
 
