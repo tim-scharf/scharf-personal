@@ -39,5 +39,4 @@ saveRDS(Xtest,'data/Xtest.rds')
 saveRDS(y,'data/y.rds')
 
 
-xgb_loop_binary(Xtrain,y,Xtest, m = 1000 ,missing = -999)
 

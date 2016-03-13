@@ -1,4 +1,4 @@
-data_checks_binary <- function(){
+data_checks_binary <- function(Xtrain,Xtest,y){
   
   stopifnot( unique(y) %in% c(0,1) ) # y is binary
   stopifnot( length(y)==nrow(Xtrain) ) # y is samelength as nrow()

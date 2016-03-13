@@ -1,58 +1,48 @@
-classifier_loop <- function(name = 'xgb_tester',
+classifier_loop <- function(name = 'xgb_test_loop',
                             Xtrain.rds,
                             y.rds, 
                             Xtest.rds, 
-                            train_func,
-                            param_func,
+                            train_func = xgb_train,
+                            param_func = gen_param_binary_xgb_tree,
                             data_checks_func,
-                            iter =10,
-                            pct_train = .5){
+                            iter =50,
+                            pct_train = .5,
+                            missing = -999){
 
 #get data checks
-  
-  
-data_checks_func()
+data_checks_func(Xtrain,Xtest,y)
 
 # settings
 n_train_full <- nrow(Xtrain)
 n_test_full  <- nrow(Xtest)
-n_train_samp  <- round(pct_sample * n_train_full) # ~ 3.7 mill 
+n_train_samp  <- round(pct_train * n_train_full) # ~ 3.7 mill 
 
 #initialize input matrices
-PCV   <- matrix(NA, nrow = n_train_full, ncol = m)  # matrix n * m <== n * m ?? dumb
-PT    <- matrix(NA,  nrow = n_test_full, ncol = m)
-IDX   <- sapply( 1:m,function(z) sample(n_train_full,n_train_samp))
-DATA  <- vector(mode='list',length=m)
+PCV   <- matrix(NA,  nrow  =  n_train_full, ncol = iter)  # matrix n * m <== n * m ?? dumb
+PT    <- matrix(NA,  nrow =  n_test_full, ncol = iter)
+IDX   <- sapply( 1:iter,function(z) sample(n_train_full,n_train_samp))
+DATA  <- vector(mode='list',length=iter)
+
 dtest <- xgb.DMatrix(Xtest, missing = missing)
 ## LOOP this bitch
 
-for(i in 1:m){ 
-
-  
-  
-  
-  model  <-    
-  
-  
-  # predict validation and test data using trained model
-
-  
-  
-  # save model
-  #xgb.save(model,file.path(model_dir, paste('boost',cv_score,sep='_')))
-  
-  # save data and predictions
-
-  
-  if(i%%100==0 | i==m) #save every 100 or when you are done
-  {
-    saveRDS(DATA ,  file = file.path(model_dir,    'PARAM_DATA.rds'))
-    saveRDS(IDX  ,   file = file.path( model_dir,  'IDX.rds'))
-    saveRDS(PCV  ,   file = file.path( model_dir,  'PCV.rds'))
-    saveRDS(PT   ,    file = file.path( model_dir, 'PT.rds'))
+for(i in 1:iter){
+   idx     = IDX[,i]
+   param   = param_func(i,missing = missing)
+   
+   train   = Xtrain[idx,]
+   y_train = y[idx]
+   
+   valid   = Xtrain[-idx,]
+   y_valid = y[-idx]
+   
+   
+   results <- train_func(train, valid, y_train, y_valid, dtest, param)
+    
+   PCV[-idx,i] <- results$pcv_iter
+   PT[,i]      <- results$pt_iter
+   DATA[[i]] <- results$data_iter
   }
-  
-}
 
 
 
