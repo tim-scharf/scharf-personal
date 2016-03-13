@@ -1,12 +1,12 @@
-xgb_loop_binary <- function(Xtrain,
-                            y, 
-                            Xtest, 
-                            model_dir  = 'xgb_loop', 
-                            param_func = gen_param_binary, 
-                            data_checks_func = data_checks_binary,
-                            m = 10,
+binary_classifier_loop <- function(Xtrain,
+                            y , 
+                            Xtest , 
+                            m = 10 ,
+                            classifier_func  =  xgb_loop,
+                            param_func       =  binary_xgb_tree, 
+                            data_checks_func =  data_checks_binary,
                             missing = NA,
-                            pct_sample = .5){
+                            pct_sample = .4){
 
 if(!dir.exists(model_dir)){dir.create(model_dir)}
 
