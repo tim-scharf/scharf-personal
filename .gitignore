@@ -87,3 +87,5 @@ data/*.rds
 R2HTML.css
 R2HTMLlogo.gif
 .Rproj.user
+BNP/data_objects/*
+BNP/xgb_loop
