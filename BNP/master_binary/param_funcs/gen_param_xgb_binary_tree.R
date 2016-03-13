@@ -1,4 +1,4 @@
-gen_param_binary <- function(seed){
+xgb_tree_params <- function(seed){
 set.seed(seed)
 params = list( 
   booster          =  'gbtree',
@@ -11,9 +11,10 @@ params = list(
   subsample        =   runif(1,.4,.6),
   colsample_bytree =   runif(1,.3,.9),
   nrounds          =   1500,
-  lambda           =  runif(1,.25,1.5),
-  alpha            =  0,
+  lambda           =  runif(1,.25,1.5),  ##tree related?
+  alpha            =  0,                 ## tree related?
   base_score       =  runif(1, .5,.8),
-  nthread          =   8 )
+  nthread          =   8,
+  missing          =   NA)
 
 return(params) } 

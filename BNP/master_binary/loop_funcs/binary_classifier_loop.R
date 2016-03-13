@@ -1,13 +1,30 @@
-binary_classifier_loop <- function(Xtrain,
-                            y , 
-                            Xtest , 
-                            m = 10 ,
-                            classifier_func  =  xgb_loop,
-                            param_func       =  binary_xgb_tree, 
-                            data_checks_func =  data_checks_binary,
-                            missing = NA,
-                            pct_sample = .4){
+classifier_loop <- function(type,
+                            Xtrain.rds,
+                            y.rds, 
+                            Xtest.rds, 
+                            iter ,
+                            classifier_func,
+                            param_func, 
+                            data_checks_func,
+                            missing_val = NA,
+                            pct_train = .5){
 
+
+  value = list( Xtrain            = readRDS(Xtrain.rds),
+                y                 =  readRDS(y.rds), 
+                Xtest.rds         =  readRDS(Xtest.rds), 
+                iter              =  iter,
+                classifier_func   = classifier_func,
+                param_func        = param_func, 
+                data_checks_func  = data_checks_func,
+                missing_val       = missing_val,
+                pct_train         = pct_train)
+  
+  attr(value, "class") <- "classifier_loop"  
+                
+    return(value)            }
+  
+  
 if(!dir.exists(model_dir)){dir.create(model_dir)}
 
 #data checks
@@ -27,22 +44,11 @@ dtest <- xgb.DMatrix(Xtest, missing = missing)
 ## LOOP this bitch
 
 for(i in 1:m){ 
-  cat('\n','working on model',i,'\n')
-  idx      <-   IDX[,i]
-  dtrain   <-   xgb.DMatrix(Xtrain[idx,] , missing = missing, label = y[idx])
-  dvalid   <-   xgb.DMatrix(Xtrain[-idx,], missing = missing, label = y[-idx])
+
   
-  param <- param_func(seed = i)
   
-  model  <-    xgb.train(
-    early.stop.round  = 20,
-    watchlist         = list( valid_err = dvalid ),
-    print.every.n     = 50,
-    param             = param,
-    data              = dtrain,
-    nrounds           = param$nrounds,
-    maximize          =  F,
-    verbose  =  1 )
+  
+  model  <-    
   
   
   # predict validation and test data using trained model
