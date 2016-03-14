@@ -6,7 +6,7 @@ require(methods)
 require(utils)
 
 setwd('~/repos/scharf-personal/BNP/')
-lapply(list.files('master_binary/util_funcs/',full.names = T,recursive = T),source)
+lapply(list.files('master_binary/',full.names = T,recursive = T),source,print.eval=F,echo = F)
 
 X <- rbindlist(list(fread('~/data/BNP/train.csv'),fread('~/data/BNP/test.csv')),fill = T)
 
@@ -18,7 +18,7 @@ num_cols <- setdiff(data_cols,fac_cols)
 
 
 
-MFAC <- treat_factors(X,fac_cols = fac_cols,max_cat = 1024)
+MFAC <- treat_factors(X,fac_cols = fac_cols,max_cat = 2**12)
 
 #patterns <- TrainFastImputation(as.data.frame(X[,num_cols,with=F]))
 #MFI <- FastImputation(as.data.frame(X[,num_cols,with=F]),patterns )

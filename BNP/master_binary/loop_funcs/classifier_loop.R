@@ -2,14 +2,18 @@ classifier_loop <- function(name = 'xgb_test_loop',
                             Xtrain.rds,
                             y.rds, 
                             Xtest.rds, 
-                            train_func = xgb_train,
-                            param_func = gen_param_binary_xgb_tree,
+                            train_func,
+                            param_func,
                             data_checks_func,
-                            iter =50,
-                            pct_train = .5,
-                            missing = -999){
+                            iter,
+                            pct_train,
+                            missing){
 
 #get data checks
+Xtrain <- readRDS(Xtrain.rds)
+Xtest <- readRDS(Xtest.rds)
+y <- readRDS(y.rds)    
+  
 data_checks_func(Xtrain,Xtest,y)
 
 # settings
@@ -27,6 +31,7 @@ dtest <- xgb.DMatrix(Xtest, missing = missing)
 ## LOOP this bitch
 
 for(i in 1:iter){
+   cat('working on model',i,'\n\n')
    idx     = IDX[,i]
    param   = param_func(i,missing = missing)
    
@@ -44,6 +49,6 @@ for(i in 1:iter){
    DATA[[i]] <- results$data_iter
   }
 
-
+return(list(PCV=PCV,PT=PT,IDX=IDX,DATA=DATA))
 
 }
