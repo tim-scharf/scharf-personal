@@ -34,6 +34,7 @@ Xtrain <- M[train_idx,]
 Xtest <- M[test_idx,]
 y <- X[train_idx,target]
 
+attr(Xtrain,'missing') <- (-999)
 saveRDS(Xtrain,'data/Xtrain.rds')
 saveRDS(Xtest,'data/Xtest.rds')
 saveRDS(y,'data/y.rds')
