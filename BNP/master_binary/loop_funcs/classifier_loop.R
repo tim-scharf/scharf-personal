@@ -17,3 +17,6 @@ data_checks_func(Xtrain,Xtest,y)
 OUTPUT <- train_func(Xtrain,Xtest,y,iter,pct_train)
 
 }
+
+
+

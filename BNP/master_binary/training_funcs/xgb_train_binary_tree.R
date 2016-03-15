@@ -23,7 +23,7 @@ xgb_train_binary_tree <- function(Xtrain,Xtest,y,iter,pct_train){
     subsample        =   runif(1,.4,.6),
     colsample_bytree =   runif(1,.3,.9),
     nrounds          =   1000,
-    lambda           =   runif(1,.25,1.5),  ##tree default 1 related?
+    lambda           =   runif(1,.25,1.75),  ##tree default 1 related?
     alpha            =   0,                 ## tree related?
     base_score       =   mean(y)+ runif(1,-.1,.1),
     nthread          =   12 )

@@ -4,6 +4,7 @@ require(Matrix)
 require(xgboost)
 require(methods)
 require(utils)
+require(FastImputation)
 
 setwd('~/repos/scharf-personal/BNP/')
 lapply(list.files('master_binary/',full.names = T,recursive = T),source,print.eval=F,echo = F)
@@ -16,27 +17,29 @@ data_cols <- paste0('v',1:131)
 fac_cols  <- names(X)[sapply(X,is.character)]
 num_cols <- setdiff(data_cols,fac_cols)
 
+MFAC <- treat_factors(X,fac_cols = fac_cols,max_cat = 2**20)
 
 
-MFAC <- treat_factors(X,fac_cols = fac_cols,max_cat = 2**12)
-
-#patterns <- TrainFastImputation(as.data.frame(X[,num_cols,with=F]))
-#MFI <- FastImputation(as.data.frame(X[,num_cols,with=F]),patterns )
-#saveRDS(MFI,'M_num_imputed.rds')
-# MTSNE <- cbind(MFI, as.matrix(MFAC))
-# saveRDS(MTSNE,'data_objects/MTSNE.rds')
-
+Xmed <- replaceNA_med(X[,num_cols,with=F])
 X999 <- replaceNA(X[,num_cols,with=F],-999)
-M999 <- as(as.matrix(X999), "sparseMatrix")
-M <- cBind(M999,MFAC)
 
-Xtrain <- M[train_idx,]
-Xtest <- M[test_idx,]
+M999 <- as(as.matrix(X999), "sparseMatrix")
+Mmed <- as(as.matrix(Xmed), 'sparseMatrix')
+
+M <- cBind(M999,MFAC)
+M_med <- cbind(Mmed,MFAC)
+
+Xtrain <- M_med[train_idx,]
+Xtest <- M_med[test_idx,]
+
+
+
+
 y <- X[train_idx,target]
 
-attr(Xtrain,'missing') <- (-999)
-saveRDS(Xtrain,'data/Xtrain.rds')
-saveRDS(Xtest,'data/Xtest.rds')
+attr(Xtrain,'missing') <- ('no_missing')
+saveRDS(Xtrain,'data/Xtrain_median_imp.rds')
+saveRDS(Xtest,'data/Xtest_median_imp.rds')
 saveRDS(y,'data/y.rds')
 
 
