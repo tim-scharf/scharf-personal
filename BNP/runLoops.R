@@ -13,8 +13,8 @@ run0  <-     classifier_loop(Xtrain.rds = 'data/Xtrain.rds',
                              y.rds = 'data/y.rds',
                              data_checks_func = data_checks_binary,
                              train_func = xgb_train_binary_tree,
-                             iter =2500,
-                             pct_train = .3)
+                             iter =2000,
+                             pct_train = .25)
 
 saveRDS(run0,'data/run0.rds')     
 rm(run0)
@@ -26,7 +26,7 @@ run1  <-     classifier_loop(Xtrain.rds = 'data/Xtrain_median_imp.rds',
                                  y.rds = 'data/y.rds',
                                  data_checks_func = data_checks_binary,
                                  train_func = xgb_train_binary_linear,
-                                 iter =2500,
-                                 pct_train = .3)
+                                 iter = 2000,
+                                 pct_train = .2)
 
-saveRDS(run_tree,'data/loop_xgb_linear.rds')    
+saveRDS(run1,'data/run1.rds')    

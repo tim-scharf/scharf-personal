@@ -16,14 +16,14 @@ xgb_train_binary_tree <- function(Xtrain,Xtest,y,iter,pct_train){
     booster          =   'gbtree',
     objective        =   'binary:logistic',
     eval_metric      =   'logloss', 
-    max.depth        =   sample(3:12, 1), 
+    max.depth        =   sample(3:10, 1), 
     eta              =   runif(1,.01,.2),
-    gamma            =   runif(1,0,1),
-    min_child_weight =   runif(1,0,3),
+    gamma            =   runif(1,0,5),
+    min_child_weight =   runif(1,0,5),
     subsample        =   runif(1,.4,.6),
-    colsample_bytree =   runif(1,.3,.9),
+    colsample_bytree =   runif(1,.3,.7),
     nrounds          =   1000,
-    lambda           =   runif(1,.25,1.75),  ##tree default 1 related?
+    lambda           =   runif(1,0,3),  ##tree default 1 related?
     alpha            =   0,                 ## tree related?
     base_score       =   mean(y)+ runif(1,-.1,.1),
     nthread          =   12 )
@@ -31,7 +31,7 @@ xgb_train_binary_tree <- function(Xtrain,Xtest,y,iter,pct_train){
   model <- xgb.train(
     early.stop.round  = 20,
     watchlist         = list( valid_err = dvalid ),
-    print.every.n     = 50,
+    print.every.n     = 25,
     param             = param,
     data              = dtrain,
     nrounds           = param$nrounds,
