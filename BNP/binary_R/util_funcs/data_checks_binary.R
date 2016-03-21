@@ -7,7 +7,7 @@ data_checks_binary <- function(Xtrain,Xtest,y){
 #  stopifnot( is.matrix(Xtest) )  #Xtest is a matrix
   stopifnot( colnames(Xtrain)==colnames(Xtest) )
   
-  cat('PASS! - yo  data is pretty clean...')
+  cat('PASS! - yo  data is pretty clean...\n')
   
   
   

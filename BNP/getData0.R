@@ -7,7 +7,7 @@ require(utils)
 require(FastImputation)
 
 setwd('~/repos/scharf-personal/BNP/')
-lapply(list.files('master_binary/',full.names = T,recursive = T),source,print.eval=F,echo = F)
+lapply(list.files('binary_R/',full.names = T,recursive = T),source,print.eval=F,echo = F)
 
 X <- rbindlist(list(fread('~/data/BNP/train.csv'),fread('~/data/BNP/test.csv')),fill = T)
 
