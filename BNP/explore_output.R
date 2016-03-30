@@ -6,18 +6,27 @@ outputRDS <- 'data/run0.rds'
 list2env(readRDS(outputRDS),.GlobalEnv)
 y <- readRDS('data/y.rds')
 
-loss_iter <- sapply(DATA,function(i) i$cv_score )
+#class wise bias
+err_mu <- ll(y,mean(y))
 
+# mean adjusted loss
+L <- apply(PCV,2,function(col) ll(y,col) )
+M <- log(PCV/(1-PCV))
+
+mu_loss <- rowMeans(L,na.rm=T)
 mu_p <- rowMeans(PCV,na.rm=T)
 
-L <- apply(PCV,2,function(col)ll(y,col) )
-mu_loss <- rowMeans(L,na.rm=T)
+mu_m <- rowMeans(M,na.rm=T)
+min_m <- apply(M,1,min,na.rm=T)
+max_m <- apply(M,1,max,na.rm=T)
 
-z <- apply(L,1,sd,na.rm=T)
 
-sk <- apply(L,1,skewness, na.rm=T)
-k <- apply(L,1,kurtosis,na.rm=T)
-q <- t(apply(PCV,1,quantile, probs = seq(0,1,length.out = 21),na.rm=T))
+z <- apply(M,1,sd,na.rm=T)
+
+
+sk <- apply(M,1,skewness, na.rm=T)
+k <- apply(M,1,kurtosis,na.rm=T)
+q <- t(apply(M,1,quantile, probs = seq(0,1,length.out = 11),na.rm=T))
 
 err_mu <- ll(y,mean(y))
 LZ <- (L/err_mu)

@@ -2,7 +2,6 @@ xgb_train_binary_tree <- function(Xtrain,Xtest,y,iter,pct_train){
   
   n_train <- nrow(Xtrain)
   n_test <- nrow(Xtest)
-  pct_cv <- pct_train
   
   OUTPUT <- init_OUPUT(n_train,n_test,iter,pct_train)
   
@@ -15,10 +14,8 @@ xgb_train_binary_tree <- function(Xtrain,Xtest,y,iter,pct_train){
   idx <- OUTPUT$IDX[,i]
   
   # index madness
-  idx_prime <- (1:n_train)[-idx]
-  idx_bool <- sample(c(T,F),length(idx_prime),replace=T,prob=c(pct_cv,1 - pct_cv))
-  idx_stop <- idx_prime[idx_bool]
-  idx_valid <- idx_prime[!idx_bool]
+  idx_stop <- sample((1:n_train)[-idx] ,length(idx))
+  idx_valid <- (1:n_train)[-c(idx,idx_stop)]
   
   #initialize 3 xgb.Dmatrices
   dtrain   <-   xgb.DMatrix( Xtrain[idx,]       ,  missing = missing, label = y[idx] )
