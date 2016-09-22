@@ -5,15 +5,19 @@ require(xgboost)
 require(methods)
 require(utils)
 require(FastImputation)
+require(feather)
+require(bit64)
 
-setwd('~/repos/scharf-personal/BNP/')
-lapply(list.files('binary_R/',full.names = T,recursive = T),source,print.eval=F,echo = F)
+setwd('~/repos/scharf-personal/santander/')
 
-X <- rbindlist(list(fread('~/data/BNP/train.csv'),fread('~/data/BNP/test.csv')),fill = T)
+X0 <- fread('data/train.csv')
+X1 <- fread('data/test.csv')
+
+
 
 train_idx <- which(!is.na(X$target))
 test_idx <- which(is.na(X$target))
-data_cols <- paste0('v',1:131)
+
 fac_cols  <- names(X)[sapply(X,is.character)]
 num_cols <- setdiff(data_cols,fac_cols)
 
